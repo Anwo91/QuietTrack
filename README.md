@@ -33,6 +33,7 @@ Everything beyond basic app + idle tracking is optional - flip toggles on in Set
 ## Install
 
 Download the installer from [Releases](https://github.com/Anwo91/QuietTrack/releases) and run it.
+Note - The installer is not signed, so you will get a warning when running. Just run anyway
 
 ## Settings
 
