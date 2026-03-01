@@ -20,6 +20,11 @@ class AppSettings {
   final int idleThresholdMs;
   final List<String> ignoredApps; // exe paths to ignore
 
+  // Behavior
+  final bool startWithWindows;
+  final bool startSilently;
+  final bool minimizeOnExit;
+
   const AppSettings({
     this.themeMode = 'system',
     this.trackWindowTitles = false,
@@ -32,6 +37,9 @@ class AppSettings {
     this.categoryRules = const [],
     this.idleThresholdMs = AppConstants.defaultIdleThresholdMs,
     this.ignoredApps = const [],
+    this.startWithWindows = true,
+    this.startSilently = false,
+    this.minimizeOnExit = true,
   });
 
   factory AppSettings.defaults() {
@@ -55,6 +63,9 @@ class AppSettings {
         'categoryRules': categoryRules,
         'idleThresholdMs': idleThresholdMs,
         'ignoredApps': ignoredApps,
+        'startWithWindows': startWithWindows,
+        'startSilently': startSilently,
+        'minimizeOnExit': minimizeOnExit,
       };
 
   factory AppSettings.fromMap(Map<dynamic, dynamic> m) {
@@ -82,6 +93,9 @@ class AppSettings {
               ?.map((e) => e.toString())
               .toList() ??
           [],
+      startWithWindows: m['startWithWindows'] as bool? ?? true,
+      startSilently: m['startSilently'] as bool? ?? false,
+      minimizeOnExit: m['minimizeOnExit'] as bool? ?? true,
     );
   }
 
@@ -97,6 +111,9 @@ class AppSettings {
     List<Map<String, String>>? categoryRules,
     int? idleThresholdMs,
     List<String>? ignoredApps,
+    bool? startWithWindows,
+    bool? startSilently,
+    bool? minimizeOnExit,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -111,6 +128,9 @@ class AppSettings {
       categoryRules: categoryRules ?? this.categoryRules,
       idleThresholdMs: idleThresholdMs ?? this.idleThresholdMs,
       ignoredApps: ignoredApps ?? this.ignoredApps,
+      startWithWindows: startWithWindows ?? this.startWithWindows,
+      startSilently: startSilently ?? this.startSilently,
+      minimizeOnExit: minimizeOnExit ?? this.minimizeOnExit,
     );
   }
 }

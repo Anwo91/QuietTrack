@@ -14,8 +14,10 @@ import 'services/storage_service.dart';
 import 'services/tray_service.dart';
 import 'services/hotkey_service.dart';
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final startSilent = args.contains('--silent');
 
   // Storage (Hive)
   final storage = StorageService();
@@ -33,8 +35,10 @@ void main() async {
     titleBarStyle: TitleBarStyle.normal,
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
+    if (!startSilent) {
+      await windowManager.show();
+      await windowManager.focus();
+    }
   });
 
   // Intercept close - hide to tray instead of quitting

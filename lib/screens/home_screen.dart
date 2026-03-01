@@ -49,10 +49,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WindowListener {
     super.dispose();
   }
 
-  /// Intercept close → hide to tray.
+  /// Intercept close → hide to tray or exit based on setting.
   @override
   void onWindowClose() async {
-    await widget.tray.hideWindow();
+    final settings = ref.read(settingsProvider);
+    if (settings.minimizeOnExit) {
+      await widget.tray.hideWindow();
+    } else {
+      await widget.tray.exitApp();
+    }
   }
 
   @override

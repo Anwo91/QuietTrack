@@ -12,6 +12,7 @@ import 'package:win32/win32.dart';
 part 'win32/win32_core_bindings.dart';
 part 'win32/win32_monitor_bindings.dart';
 part 'win32/win32_hotkey_bindings.dart';
+part 'win32/win32_registry_bindings.dart';
 
 // Win32Service - public API
 
@@ -322,6 +323,69 @@ class Win32Service {
       return false;
     } finally {
       calloc.free(msg);
+    }
+  }
+
+  // Registry: Start with Windows
+
+  static const _runKey = r'Software\Microsoft\Windows\CurrentVersion\Run';
+  static const _valueName = 'QuietTrack';
+
+  /// Add QuietTrack to HKCU\...\Run. Passes --silent if [silent] is true.
+  static bool setStartupEnabled(String exePath, {bool silent = false}) {
+    final subKey = _runKey.toNativeUtf16();
+    final phKey = calloc<IntPtr>();
+    try {
+      // HKEY_CURRENT_USER = 0x80000001, KEY_SET_VALUE = 0x0002
+      final res = _regOpenKeyEx(0x80000001, subKey, 0, 0x0002, phKey);
+      if (res != 0) return false;
+      final hKey = phKey.value;
+      try {
+        final valName = _valueName.toNativeUtf16();
+        final value = silent ? '"$exePath" --silent' : '"$exePath"';
+        final data = value.toNativeUtf16();
+        final dataBytes = data.cast<Uint8>();
+        // REG_SZ = 1, byte length includes null terminator
+        final byteLen = (value.length + 1) * 2;
+        try {
+          final setRes = _regSetValueEx(hKey, valName, 0, 1, dataBytes, byteLen);
+          return setRes == 0;
+        } finally {
+          calloc.free(valName);
+          calloc.free(data);
+        }
+      } finally {
+        _regCloseKey(hKey);
+      }
+    } finally {
+      calloc.free(subKey);
+      calloc.free(phKey);
+    }
+  }
+
+  /// Remove QuietTrack from HKCU\...\Run.
+  static bool removeStartupEntry() {
+    final subKey = _runKey.toNativeUtf16();
+    final phKey = calloc<IntPtr>();
+    try {
+      // HKEY_CURRENT_USER = 0x80000001, KEY_SET_VALUE = 0x0002
+      final res = _regOpenKeyEx(0x80000001, subKey, 0, 0x0002, phKey);
+      if (res != 0) return false;
+      final hKey = phKey.value;
+      try {
+        final valName = _valueName.toNativeUtf16();
+        try {
+          final delRes = _regDeleteValue(hKey, valName);
+          return delRes == 0;
+        } finally {
+          calloc.free(valName);
+        }
+      } finally {
+        _regCloseKey(hKey);
+      }
+    } finally {
+      calloc.free(subKey);
+      calloc.free(phKey);
     }
   }
 }

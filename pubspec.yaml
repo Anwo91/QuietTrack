@@ -1,7 +1,7 @@
 name: quiettrack
 description: "QuietTrack - Windows Activity Tracker"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 repository: https://github.com/Anwo91/QuietTrack
 homepage: https://github.com/Anwo91/QuietTrack
 license: MIT

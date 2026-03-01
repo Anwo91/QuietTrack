@@ -75,6 +75,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 24),
           _buildGeneralSection(theme, settings, notifier),
           const SizedBox(height: 32),
+          _buildBehaviorSection(theme, settings, notifier),
+          const SizedBox(height: 32),
           _buildAdvancedFeaturesSection(theme, settings, notifier),
           const SizedBox(height: 32),
           _buildIgnoredAppsSection(theme, settings, notifier),
@@ -162,6 +164,51 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ],
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBehaviorSection(
+    ThemeData theme,
+    AppSettings settings,
+    SettingsNotifier notifier,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionHeader(theme, 'Behavior'),
+        const SizedBox(height: 8),
+        Card(
+          child: Column(
+            children: [
+              _toggle(
+                theme: theme,
+                title: 'Start with Windows',
+                subtitle: 'Launch QuietTrack automatically when you sign in.',
+                value: settings.startWithWindows,
+                onChanged: notifier.toggleStartWithWindows,
+              ),
+              const Divider(height: 1),
+              _toggle(
+                theme: theme,
+                title: 'Start silently',
+                subtitle:
+                    'Hide the window on startup and run in the system tray.',
+                value: settings.startSilently,
+                onChanged: notifier.toggleStartSilently,
+              ),
+              const Divider(height: 1),
+              _toggle(
+                theme: theme,
+                title: 'Minimize on exit',
+                subtitle:
+                    'Hide to system tray instead of quitting when you close the window.',
+                value: settings.minimizeOnExit,
+                onChanged: notifier.toggleMinimizeOnExit,
+              ),
+            ],
           ),
         ),
       ],

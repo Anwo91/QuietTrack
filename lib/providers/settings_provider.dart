@@ -1,9 +1,12 @@
 /// Settings provider. Loads from Hive, persists on every change.
 library;
 
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/settings_model.dart';
 import '../services/storage_service.dart';
+import '../services/win32_service.dart';
 
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
@@ -14,6 +17,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   SettingsNotifier(this._storage) : super(AppSettings.defaults()) {
     _load();
+    _syncStartupRegistry();
   }
 
   void _load() {
@@ -22,6 +26,20 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> _persist() async {
     await _storage.saveSettings(state);
+  }
+
+  /// Sync the registry startup entry to match the current setting.
+  void _syncStartupRegistry() {
+    try {
+      final exePath = Platform.resolvedExecutable;
+      if (state.startWithWindows) {
+        Win32Service.setStartupEnabled(exePath, silent: state.startSilently);
+      } else {
+        Win32Service.removeStartupEntry();
+      }
+    } catch (_) {
+      // Registry is non-critical.
+    }
   }
 
   Future<void> resetToDefaults() async {
@@ -100,6 +118,26 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   Future<void> removeIgnoredApp(String exePath) async {
     final updated = List<String>.from(state.ignoredApps)..remove(exePath);
     state = state.copyWith(ignoredApps: updated);
+    await _persist();
+  }
+
+  // Behavior toggles
+
+  Future<void> toggleStartWithWindows(bool v) async {
+    state = state.copyWith(startWithWindows: v);
+    await _persist();
+    _syncStartupRegistry();
+  }
+
+  Future<void> toggleStartSilently(bool v) async {
+    state = state.copyWith(startSilently: v);
+    await _persist();
+    // Re-sync registry so the --silent flag is updated
+    if (state.startWithWindows) _syncStartupRegistry();
+  }
+
+  Future<void> toggleMinimizeOnExit(bool v) async {
+    state = state.copyWith(minimizeOnExit: v);
     await _persist();
   }
 }

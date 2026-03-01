@@ -8,7 +8,7 @@
 ;   4. Output: installer/Output/QuietTrack_Setup.exe
 
 #define MyAppName "QuietTrack"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Anwo91"
 #define MyAppURL "https://github.com/Anwo91/QuietTrack"
 #define MyAppExeName "quiettrack.exe"
@@ -41,7 +41,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "startup"; Description: "Start QuietTrack with Windows"; GroupDescription: "Other:"; Flags: unchecked
+Name: "startup"; Description: "Start QuietTrack with Windows"; GroupDescription: "Other:";
 
 [Files]
 ; Main executable + all DLLs and data from the Release folder
@@ -54,7 +54,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Registry]
 ; Optional: start with Windows (only if user checked the box)
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """{app}\{#MyAppExeName}"""; Flags: uninsdeletevalue; Tasks: startup
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """{app}\{#MyAppExeName}"" --silent"; Flags: uninsdeletevalue; Tasks: startup
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch QuietTrack"; Flags: nowait postinstall skipifsilent
